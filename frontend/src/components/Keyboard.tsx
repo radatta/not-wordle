@@ -23,10 +23,7 @@ function buildKeyColors(guesses: TileResult[][]): Record<string, TileColor> {
   for (const guess of guesses) {
     for (const tile of guess) {
       const current = map[tile.letter];
-      if (
-        !current ||
-        COLOR_PRIORITY[tile.color] > COLOR_PRIORITY[current]
-      ) {
+      if (!current || COLOR_PRIORITY[tile.color] > COLOR_PRIORITY[current]) {
         map[tile.letter] = tile.color;
       }
     }
@@ -35,11 +32,11 @@ function buildKeyColors(guesses: TileResult[][]): Record<string, TileColor> {
 }
 
 const keyColorStyle: Record<TileColor | "default", string> = {
-  green: "bg-[#538d4e] text-white",
-  yellow: "bg-[#b59f3b] text-white",
-  gray: "bg-[#3a3a3c] text-white",
-  empty: "bg-[#818384] text-white",
-  default: "bg-[#818384] text-white",
+  green: "bg-[#538d4e] text-white shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)]",
+  yellow: "bg-[#b59f3b] text-white shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)]",
+  gray: "bg-[#3a3a3c] text-[#cccccc] shadow-[inset_0_-2px_0_rgba(0,0,0,0.25)]",
+  empty: "bg-[#818384] text-white shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)]",
+  default: "bg-[#818384] text-white shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)]",
 };
 
 export function Keyboard({ guesses, onKey }: KeyboardProps) {
@@ -62,9 +59,10 @@ export function Keyboard({ guesses, onKey }: KeyboardProps) {
                 onClick={() => onKey(key)}
                 className={`
                   ${isWide ? "px-3 min-w-[65px]" : "w-10"}
-                  h-14 rounded flex items-center justify-center
+                  h-14 rounded-md flex items-center justify-center
                   text-sm font-bold uppercase cursor-pointer
-                  select-none transition-colors active:opacity-70
+                  select-none transition-[background-color,transform,box-shadow] duration-150
+                  hover:brightness-110 active:scale-[0.94] active:brightness-95
                   ${styleClass}
                 `}
                 aria-label={key === "BACK" ? "Backspace" : key}

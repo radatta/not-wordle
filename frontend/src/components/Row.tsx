@@ -5,13 +5,12 @@ interface RowProps {
   tiles: { letter: string; color: TileColor }[];
   revealed: boolean;
   shake: boolean;
+  won?: boolean;
 }
 
-export function Row({ tiles, revealed, shake }: RowProps) {
+export function Row({ tiles, revealed, shake, won }: RowProps) {
   return (
-    <div
-      className={`flex gap-1.5 ${shake ? "animate-shake" : ""}`}
-    >
+    <div className={`flex gap-1.5 ${shake ? "animate-shake" : ""}`}>
       {tiles.map((tile, i) => (
         <Tile
           key={i}
@@ -19,6 +18,7 @@ export function Row({ tiles, revealed, shake }: RowProps) {
           color={tile.color}
           revealed={revealed}
           colIndex={i}
+          won={won}
         />
       ))}
     </div>

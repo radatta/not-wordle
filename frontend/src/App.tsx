@@ -4,8 +4,11 @@ import type { GameStatus, TileResult } from "./types";
 import { Board } from "./components/Board";
 import { Keyboard } from "./components/Keyboard";
 import { Modal } from "./components/Modal";
+import { HelpModal } from "./components/HelpModal";
+import { Header } from "./components/Header";
 
 const SESSION_KEY = "wordle_session_id";
+const HELP_SEEN_KEY = "wordle_help_seen";
 
 export function App() {
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -16,6 +19,7 @@ export function App() {
   const [shakeRow, setShakeRow] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [showHelp, setShowHelp] = useState(false);
 
   const gameOver = gameStatus !== "playing";
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -66,9 +70,17 @@ export function App() {
     };
   }, [startNewGame]);
 
+  // Show How-to-play once on first visit.
+  useEffect(() => {
+    if (!localStorage.getItem(HELP_SEEN_KEY)) {
+      setShowHelp(true);
+      localStorage.setItem(HELP_SEEN_KEY, "1");
+    }
+  }, []);
+
   const handleKey = useCallback(
     async (key: string) => {
-      if (gameOver || submitting || !sessionId) return;
+      if (gameOver || submitting || !sessionId || showHelp) return;
 
       if (key === "BACK" || key === "BACKSPACE") {
         setCurrentGuess((prev) => prev.slice(0, -1));
@@ -112,29 +124,43 @@ export function App() {
         }
       }
     },
-    [gameOver, submitting, sessionId, currentGuess, showToast]
+    [gameOver, submitting, sessionId, currentGuess, showToast, showHelp]
   );
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === "Escape" && showHelp) {
+        setShowHelp(false);
+        return;
+      }
       handleKey(e.key.toUpperCase());
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [handleKey]);
+  }, [handleKey, showHelp]);
+
+  const handleNewGameClick = useCallback(() => {
+    if (!gameOver) {
+      const ok = window.confirm(
+        "Start a new game? Your current progress will be lost."
+      );
+      if (!ok) return;
+    }
+    void startNewGame();
+  }, [gameOver, startNewGame]);
 
   return (
-    <div className="min-h-screen bg-[#121213] text-white flex flex-col items-center font-sans">
-      <header className="w-full max-w-lg border-b border-[#3a3a3c] px-4 py-3 flex items-center justify-center">
-        <h1 className="text-2xl font-bold tracking-widest uppercase text-white select-none">
-          Definitely Not Wordle
-        </h1>
-      </header>
+    <div className="min-h-screen text-white flex flex-col items-center font-sans">
+      <Header
+        onHelp={() => setShowHelp(true)}
+        onNewGame={handleNewGameClick}
+      />
 
       {toast && (
         <div
-          className="fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-white text-black font-semibold text-sm px-4 py-2 rounded-lg shadow-lg pointer-events-none"
+          key={toast}
+          className="fixed top-20 left-1/2 z-40 bg-white text-black font-semibold text-sm px-4 py-2 rounded-lg shadow-lg pointer-events-none animate-toast"
           role="status"
           aria-live="polite"
         >
@@ -142,11 +168,12 @@ export function App() {
         </div>
       )}
 
-      <main className="flex flex-col items-center flex-1 pt-6 pb-4 w-full">
+      <main className="flex flex-col items-center flex-1 pt-4 sm:pt-6 pb-4 w-full">
         <Board
           guesses={guesses}
           currentGuess={currentGuess}
           shakeRow={shakeRow}
+          gameStatus={gameStatus}
         />
 
         <div className="mt-auto pt-4 w-full">
@@ -154,7 +181,9 @@ export function App() {
         </div>
       </main>
 
-      {gameOver && (
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
+
+      {gameOver && !showHelp && (
         <Modal
           status={gameStatus as "won" | "lost"}
           guessCount={guesses.length}

@@ -1,5 +1,5 @@
 import { Row } from "./Row";
-import type { TileColor, TileResult } from "../types";
+import type { GameStatus, TileColor, TileResult } from "../types";
 
 const MAX_GUESSES = 5;
 
@@ -7,6 +7,7 @@ interface BoardProps {
   guesses: TileResult[][];
   currentGuess: string;
   shakeRow: boolean;
+  gameStatus: GameStatus;
 }
 
 function buildCurrentTiles(currentGuess: string) {
@@ -24,10 +25,15 @@ function buildEmptyTiles() {
     .map(() => ({ letter: "", color: "empty" as TileColor }));
 }
 
-export function Board({ guesses, currentGuess, shakeRow }: BoardProps) {
+export function Board({
+  guesses,
+  currentGuess,
+  shakeRow,
+  gameStatus,
+}: BoardProps) {
   const rows = [];
+  const lastIndex = guesses.length - 1;
 
-  // Submitted guesses
   for (let i = 0; i < guesses.length; i++) {
     rows.push(
       <Row
@@ -35,11 +41,11 @@ export function Board({ guesses, currentGuess, shakeRow }: BoardProps) {
         tiles={guesses[i]}
         revealed={true}
         shake={false}
+        won={gameStatus === "won" && i === lastIndex}
       />
     );
   }
 
-  // Current active row (if game still going)
   if (guesses.length < MAX_GUESSES) {
     rows.push(
       <Row
@@ -51,8 +57,8 @@ export function Board({ guesses, currentGuess, shakeRow }: BoardProps) {
     );
   }
 
-  // Empty rows
-  const emptyCount = MAX_GUESSES - guesses.length - (guesses.length < MAX_GUESSES ? 1 : 0);
+  const emptyCount =
+    MAX_GUESSES - guesses.length - (guesses.length < MAX_GUESSES ? 1 : 0);
   for (let i = 0; i < emptyCount; i++) {
     rows.push(
       <Row
@@ -64,9 +70,5 @@ export function Board({ guesses, currentGuess, shakeRow }: BoardProps) {
     );
   }
 
-  return (
-    <div className="flex flex-col gap-1.5 my-4">
-      {rows}
-    </div>
-  );
+  return <div className="flex flex-col gap-1.5 my-4">{rows}</div>;
 }
