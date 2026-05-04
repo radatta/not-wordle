@@ -1,13 +1,12 @@
-# Definitely Not Wordle
+# Not Wordle
 
-A Wordle clone built for the GoLinks 2026 Software Engineering Internship
-project: a 5-letter secret word, 5 guesses, classic green/yellow/gray
-feedback with proper duplicate-letter handling.
+Not a wordle clone!
+
 
 ```
 ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐
 │  Browser         │───▶│  CloudFront + S3 │───▶│  Vite static     │
-│                  │    │  (planned)       │    │  React build     │
+│                  │    │                  │    │  React build     │
 └──────────────────┘    └──────────────────┘    └──────────────────┘
          │
          │   /api/*
@@ -15,7 +14,7 @@ feedback with proper duplicate-letter handling.
 ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐
 │  Lambda          │───▶│  FastAPI         │───▶│  In-memory       │
 │  Function URL    │    │  (Mangum)        │    │  session dict    │
-│  (planned)       │    │                  │    │                  │
+│                  │    │                  │    │                  │
 └──────────────────┘    └──────────────────┘    └──────────────────┘
 ```
 
@@ -109,7 +108,7 @@ C  R  E  E  D
 The first `E` is yellow (one `E` exists in the secret), the second `E`
 is gray (the secret's only `E` was already consumed).
 
-## AWS deployment (planned)
+## AWS deployment
 
 - **Backend**: ZIP `backend/` + site-packages, upload to a Python 3.12
   Lambda, set handler to `lambda_handler.handler`, enable a Function URL
