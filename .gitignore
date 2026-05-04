@@ -1,4 +1,15 @@
-# v0 sandbox internal files
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Local Claude Code state
+.claude/settings.local.json
+
+# v0 sandbox internal files (kept from upstream)
 __v0_runtime_loader.js
 __v0_devtools.tsx
 __v0_jsx-dev-runtime.ts
@@ -8,9 +19,23 @@ __v0_jsx-dev-runtime.ts
 next.user-config.*
 
 # Environment variables
-.env*.local
+.env
+.env.local
+.env.*.local
 
-# Common ignores
-node_modules
-.next/
-.DS_Store
+# Frontend
+node_modules/
+frontend/dist/
+
+# Backend
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/.pytest_cache/
+backend/build/
+backend/dist/
+backend/lambda.zip
+*.pyc
+
+# TS build cache
+*.tsbuildinfo
