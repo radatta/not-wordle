@@ -1,0 +1,5 @@
+# Minimal runtime deps for AWS Lambda. Excludes uvicorn (only needed
+# for local dev — Mangum invokes the ASGI app directly inside Lambda).
+fastapi>=0.115,<1.0
+mangum>=0.19,<1.0
+pydantic>=2.7,<3.0

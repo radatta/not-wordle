@@ -35,6 +35,10 @@ backend/.pytest_cache/
 backend/build/
 backend/dist/
 backend/lambda.zip
+
+# Build output (Lambda zip staging)
+build/
+.env.production
 *.pyc
 
 # TS build cache
